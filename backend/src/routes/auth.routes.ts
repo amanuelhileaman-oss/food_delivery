@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { AuthController } from '../controllers/auth.controller';
 import { validate } from '../middlewares/validate.middleware';
-import { authenticate } from '../middlewares/auth.middleware';
+import { authenticateUser } from '../middlewares/auth.middleware';
 import { RateLimiter } from '../middlewares/rateLimit.middleware';
 import {
   registerCustomerSchema,
@@ -31,9 +31,9 @@ router.post('/reset-password', validate(resetPasswordSchema), AuthController.res
 // Login and Logout
 router.post('/login', RateLimiter.loginLimiter, validate(loginSchema), AuthController.login);
 router.post('/refresh-token', AuthController.refreshToken);
-router.post('/logout', authenticate, AuthController.logout);
+router.post('/logout', authenticateUser, AuthController.logout);
 
 // Protected user routes
-router.get('/me', authenticate, AuthController.getCurrentUser);
+router.get('/me', authenticateUser, AuthController.getCurrentUser);
 
 export default router;

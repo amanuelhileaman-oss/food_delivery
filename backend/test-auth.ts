@@ -1,7 +1,13 @@
 import axios from 'axios';
 
+const ts = Date.now();
+const testIp = `test-ip-${ts}`;
 const BASE_URL = 'http://localhost:5000/api/v1';
-const client = axios.create({ baseURL: BASE_URL, validateStatus: () => true });
+const client = axios.create({ 
+  baseURL: BASE_URL, 
+  validateStatus: () => true,
+  headers: { 'x-test-ip': testIp }
+});
 
 async function runTests() {
   console.log('Testing Authentication Endpoints...\n');
@@ -20,7 +26,6 @@ async function runTests() {
     }
   };
 
-  const ts = Date.now();
   const customerData = {
     firstName: 'Test',
     lastName: 'Customer',
@@ -90,6 +95,9 @@ async function runTests() {
       email: customerData.email,
       password: customerData.password,
     });
+    if (loginRes.status !== 200) throw new Error(`Login failed in password hashing test: ${loginRes.status}`);
+    if (!loginRes.data.user) throw new Error('No user object returned');
+    
     if (loginRes.data.user.password || loginRes.data.user.passwordHash) {
        throw new Error('Password hash leaked!');
     }
@@ -245,10 +253,16 @@ async function runTests() {
   });
 
   await runTest('RATE LIMITING', async () => {
+    const rateLimitClient = axios.create({
+      baseURL: BASE_URL,
+      validateStatus: () => true,
+      headers: { 'x-test-ip': `test-ip-ratelimit-${ts}` }
+    });
+    
     // Generate lots of requests to login
     let hitLimit = false;
     for (let i = 0; i < 15; i++) {
-      const res = await client.post('/auth/login', {
+      const res = await rateLimitClient.post('/auth/login', {
         email: customerData.email,
         password: 'wrongpassword',
       });
