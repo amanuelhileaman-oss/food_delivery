@@ -18,6 +18,10 @@ import { Orders } from './pages/customer/Orders';
 import { OwnerLayout } from './components/layouts/OwnerLayout';
 import { OwnerDashboard } from './pages/owner/OwnerDashboard';
 
+import { AdminLayout } from './components/layouts/AdminLayout';
+import { AdminDashboard } from './pages/admin/AdminDashboard';
+import { RestaurantApprovals } from './pages/admin/RestaurantApprovals';
+
 import { Toaster } from 'react-hot-toast';
 
 function App() {
@@ -51,6 +55,14 @@ function App() {
           <Route element={<ProtectedRoute allowedRoles={['RESTAURANT_OWNER']} />}>
             <Route path="/owner" element={<OwnerLayout />}>
               <Route index element={<OwnerDashboard />} />
+            </Route>
+          </Route>
+
+          {/* Admin Routes */}
+          <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="approvals" element={<RestaurantApprovals />} />
             </Route>
           </Route>
 

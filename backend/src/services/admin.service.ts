@@ -9,7 +9,8 @@ export class AdminService {
     return prisma.restaurant.findMany({ 
       where, 
       include: { 
-        owner: { select: { id: true, firstName: true, lastName: true, email: true } }
+        owner: { select: { id: true, firstName: true, lastName: true, email: true } },
+        documents: true
       } 
     });
   }
