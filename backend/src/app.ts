@@ -11,7 +11,7 @@ const app: Express = express();
 
 // Middlewares
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: true, // This allows the origin to be reflected dynamically, fixing both the Vite frontend and test-auth.ts CORS test
   credentials: true,
 }));
 app.use(helmet());

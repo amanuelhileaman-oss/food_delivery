@@ -8,9 +8,22 @@ import { RegisterOwner } from './pages/auth/RegisterOwner';
 import { RegisterDriver } from './pages/auth/RegisterDriver';
 import { Dashboard } from './pages/Dashboard';
 
+import { CustomerLayout } from './components/layouts/CustomerLayout';
+import { CustomerDashboard } from './pages/customer/CustomerDashboard';
+import { Profile } from './pages/customer/Profile';
+import { Addresses } from './pages/customer/Addresses';
+import { Favorites } from './pages/customer/Favorites';
+import { Orders } from './pages/customer/Orders';
+
+import { OwnerLayout } from './components/layouts/OwnerLayout';
+import { OwnerDashboard } from './pages/owner/OwnerDashboard';
+
+import { Toaster } from 'react-hot-toast';
+
 function App() {
   return (
     <AuthProvider>
+      <Toaster position="top-right" />
       <Router>
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
@@ -18,11 +31,29 @@ function App() {
           <Route path="/register/customer" element={<RegisterCustomer />} />
           <Route path="/register/owner" element={<RegisterOwner />} />
           <Route path="/register/driver" element={<RegisterDriver />} />
-          
+
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
           </Route>
           
+          {/* Customer Routes */}
+          <Route element={<ProtectedRoute allowedRoles={['CUSTOMER']} />}>
+            <Route path="/customer" element={<CustomerLayout />}>
+              <Route index element={<CustomerDashboard />} />
+              <Route path="profile" element={<Profile />} />
+              <Route path="addresses" element={<Addresses />} />
+              <Route path="favorites" element={<Favorites />} />
+              <Route path="orders" element={<Orders />} />
+            </Route>
+          </Route>
+
+          {/* Owner Routes */}
+          <Route element={<ProtectedRoute allowedRoles={['RESTAURANT_OWNER']} />}>
+            <Route path="/owner" element={<OwnerLayout />}>
+              <Route index element={<OwnerDashboard />} />
+            </Route>
+          </Route>
+
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </Router>

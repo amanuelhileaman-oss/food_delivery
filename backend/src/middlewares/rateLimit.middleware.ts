@@ -1,10 +1,10 @@
-import rateLimit from 'express-rate-limit';
+import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 
-const keyGenerator = (req: any) => {
+const keyGenerator = (req: any, res: any) => {
   if ((process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') && req.headers['x-test-ip']) {
     return req.headers['x-test-ip'] as string;
   }
-  return req.ip || req.connection?.remoteAddress || 'unknown';
+  return ipKeyGenerator(req, res);
 };
 
 export class RateLimiter {

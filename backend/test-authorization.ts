@@ -64,10 +64,23 @@ const runTest = async (name: string, testFn: () => Promise<void>) => {
 };
 
 const setupData = async () => {
-  // Clear relevant tables
-  await prisma.review.deleteMany();
-  await prisma.supportTicket.deleteMany();
-  await prisma.favorite.deleteMany();
+  // Retry logic for DB
+  let retries = 5;
+  while (retries > 0) {
+    try {
+      await prisma.$connect();
+      // Clear relevant tables
+      await prisma.review.deleteMany();
+      await prisma.supportTicket.deleteMany();
+      await prisma.favorite.deleteMany();
+      break;
+    } catch (e: any) {
+      if (retries === 1) throw e;
+      console.log('Database waking up... Retrying in 2 seconds...');
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      retries--;
+    }
+  }
   await prisma.cart.deleteMany();
   await prisma.order.deleteMany();
   await prisma.restaurant.deleteMany();
